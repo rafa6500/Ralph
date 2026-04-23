@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RALPH">
+<meta name="theme-color" content="#08060f">
+<title>RALPH</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #08060f;
+  --surface: #110e1f;
+  --surface2: #1a1630;
+  --border: #2a2045;
+  --accent: #ffd166;
+  --accent2: #7c3fff;
+  --text: #ece8f5;
+  --muted: #6b5f8a;
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; overflow:hidden; }
+body {
+  background:var(--bg); color:var(--text);
+  font-family:'Inter',sans-serif;
+  height:100%; overscroll-behavior:none;
+}
+body::before {
+  content:''; position:fixed; inset:0;
+  background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(124,63,255,0.1) 0%,transparent 60%);
+  pointer-events:none; z-index:0;
+}
+.app {
+  position:relative; z-index:1;
+  display:flex; flex-direction:column;
+  height:100%;
+  padding-top:var(--safe-top);
+  padding-bottom:var(--safe-bottom);
+  max-width:600px; margin:0 auto;
+}
+header {
+  padding:14px 16px 12px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border); flex-shrink:0;
+}
+.logo-wrap { display:flex; align-items:center; gap:12px; }
+.orb {
+  width:38px; height:38px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#ffd166,var(--accent2));
+  box-shadow:0 0 18px rgba(255,209,102,0.5);
+  animation:breathe 3s ease-in-out infinite; flex-shrink:0;
+}
+@keyframes breathe {
+  0%,100%{box-shadow:0 0 18px rgba(255,209,102,0.4);transform:scale(1)}
+  50%{box-shadow:0 0 30px rgba(255,209,102,0.7);transform:scale(1.05)}
+}
+.logo { font-family:'Cinzel',serif; font-size:28px; font-weight:700; letter-spacing:5px; line-height:1; background:linear-gradient(135deg,var(--accent),#d4aaff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.logo-sub { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--accent); letter-spacing:2px; opacity:.8; margin-top:3px; }
+.creator-badge { display:flex; align-items:center; gap:5px; background:linear-gradient(135deg,rgba(255,209,102,0.15),rgba(255,209,102,0.05)); border:1px solid rgba(255,209,102,0.4); border-radius:20px; padding:5px 10px; font-size:10px; color:var(--accent); font-family:'JetBrains Mono',monospace; letter-spacing:1px; }
+.cbdot { width:5px; height:5px; background:var(--accent); border-radius:50%; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.controls {
+  display:flex; gap:8px; align-items:center;
+  padding:10px 16px; border-bottom:1px solid var(--border);
+  flex-shrink:0; overflow-x:auto; scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.controls::-webkit-scrollbar { display:none; }
+.mic-btn {
+  width:38px; height:38px; border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),#cc9900);
+  border:none; cursor:pointer; display:flex;
+  align-items:center; justify-content:center;
+  font-size:11px; font-weight:600; color:#000; flex-shrink:0; transition:all .2s;
+  font-family:'JetBrains Mono',monospace; letter-spacing:.5px;
+}
+.mic-btn:active { transform:scale(.92); }
+.mic-btn.listening { background:linear-gradient(135deg,#ff4444,#cc0000); color:#fff; animation:lpulse 1s infinite; }
+@keyframes lpulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+.chip {
+  padding:7px 13px; border:1px solid var(--border);
+  border-radius:20px; background:var(--surface);
+  color:var(--muted); font-size:12px; cursor:pointer;
+  white-space:nowrap; user-select:none; flex-shrink:0; transition:all .2s;
+  font-weight:500;
+}
+.chip:active, .chip.tapped { border-color:var(--accent); color:var(--accent); }
+.chat {
+  flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:14px 16px 8px; display:flex; flex-direction:column; gap:14px;
+}
+.msg { display:flex; gap:10px; animation:msgIn .25s ease; }
+@keyframes msgIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+.msg.user { flex-direction:row-reverse; }
+.av {
+  width:32px; height:32px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; flex-shrink:0; margin-top:2px;
+  font-weight:700;
+}
+.av.ralph { background:radial-gradient(circle at 35% 35%,#ffd166,var(--accent2)); box-shadow:0 0 10px rgba(255,209,102,0.4); font-family:'Cinzel',serif; color:#fff; letter-spacing:1px; }
+.av.user { background:linear-gradient(135deg,var(--accent),#cc9900); color:#000; font-family:'JetBrains Mono',monospace; font-size:10px; }
+.bubble { max-width:82%; padding:12px 15px; border-radius:16px; font-size:15px; line-height:1.6; }
+.msg.ralph .bubble { background:var(--surface); border:1px solid var(--border); border-top-left-radius:4px; color:var(--text); white-space:pre-wrap; word-break:break-word; }
+.msg.user .bubble { background:linear-gradient(135deg,#cc9900,#7a5c00); border-top-right-radius:4px; color:#fff; word-break:break-word; }
+.speak-bar { display:none; align-items:center; gap:8px; padding:8px 16px; background:rgba(255,209,102,0.04); border-top:1px solid var(--border); flex-shrink:0; }
+.speak-bar.on { display:flex; }
+.waves { display:flex; gap:3px; align-items:center; height:16px; }
+.waves span { width:3px; background:var(--accent); border-radius:2px; animation:wave .8s infinite ease-in-out; }
+.waves span:nth-child(1){height:4px;animation-delay:0s}
+.waves span:nth-child(2){height:10px;animation-delay:.1s}
+.waves span:nth-child(3){height:16px;animation-delay:.2s}
+.waves span:nth-child(4){height:10px;animation-delay:.3s}
+.waves span:nth-child(5){height:4px;animation-delay:.4s}
+@keyframes wave { 0%,100%{transform:scaleY(.5)} 50%{transform:scaleY(1)} }
+.speak-label { font-size:10px; color:var(--accent); font-family:'JetBrains Mono',monospace; letter-spacing:1.5px; font-weight:600; }
+.stop-btn { margin-left:auto; background:none; border:1px solid rgba(255,68,68,.4); border-radius:8px; padding:4px 10px; color:#ff4444; font-size:10px; cursor:pointer; font-family:'JetBrains Mono',monospace; letter-spacing:.5px; }
+.typing { display:none; align-items:center; gap:10px; padding:6px 16px 8px; flex-shrink:0; }
+.typing.on { display:flex; }
+.typing-orb { width:32px; height:32px; border-radius:50%; background:radial-gradient(circle at 35% 35%,#ffd166,var(--accent2)); flex-shrink:0; box-shadow:0 0 10px rgba(255,209,102,0.4); }
+.dots { display:flex; gap:4px; }
+.dots span { width:6px; height:6px; background:var(--accent); border-radius:50%; animation:bounce 1.2s infinite; opacity:.5; }
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce { 0%,80%,100%{transform:translateY(0);opacity:.5} 40%{transform:translateY(-5px);opacity:1} }
+.input-area { padding:10px 16px calc(10px + var(--safe-bottom)); border-top:1px solid var(--border); flex-shrink:0; background:var(--bg); }
+.input-row { display:flex; gap:8px; align-items:flex-end; }
+#msg-input {
+  flex:1; background:var(--surface); border:1px solid var(--border);
+  border-radius:22px; padding:12px 16px; color:var(--text);
+  font-family:'Inter',sans-serif; font-size:16px;
+  resize:none; outline:none; max-height:120px;
+  line-height:1.4; -webkit-appearance:none; transition:border-color .2s;
+}
+#msg-input:focus { border-color:var(--accent); }
+#msg-input::placeholder { color:var(--muted); }
+.send-btn {
+  width:46px; height:46px; background:linear-gradient(135deg,var(--accent),#cc9900);
+  border:none; border-radius:50%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; color:#000; flex-shrink:0; transition:all .2s;
+  font-family:'JetBrains Mono',monospace; letter-spacing:.5px;
+}
+.send-btn:active { transform:scale(.92); }
+.send-btn:disabled { opacity:.4; }
+.hint { font-size:9px; color:var(--muted); font-family:'JetBrains Mono',monospace; text-align:center; padding:6px 0 4px; letter-spacing:1.5px; flex-shrink:0; }
+.hint span { color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="logo-wrap">
+      <div class="orb"></div>
+      <div>
+        <div class="logo">RALPH</div>
+        <div class="logo-sub">PERSONAL AI</div>
+      </div>
+    </div>
+    <div class="creator-badge"><div class="cbdot"></div>RAFAEL</div>
+  </header>
+
+  <div class="controls">
+    <button class="mic-btn" id="mic-btn" onclick="toggleMic()">MIC</button>
+    <div class="chip" onclick="quick(this,'What should I focus on today?')">Daily focus</div>
+    <div class="chip" onclick="quick(this,'Hype me up. Remind me why I will win.')">Hype me</div>
+    <div class="chip" onclick="quick(this,'Give me brutally honest feedback.')">Be real</div>
+    <div class="chip" onclick="quick(this,'Help me plan my next move.')">Plan</div>
+    <div class="chip" onclick="quick(this,'Write something for me.')">Write</div>
+    <div class="chip" onclick="quick(this,'Research something for me.')">Research</div>
+  </div>
+
+  <div class="chat" id="chat">
+    <div class="msg ralph">
+      <div class="av ralph">R</div>
+      <div class="bubble">Rafael. Ralph here.
+
+Your right hand. Warm when you need it, sharp when it counts. No wasted words.
+
+What are we working on?</div>
+    </div>
+  </div>
+
+  <div class="speak-bar" id="speak-bar">
+    <div class="waves"><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="speak-label">RALPH SPEAKING</div>
+    <button class="stop-btn" onclick="stopSpeak()">STOP</button>
+  </div>
+
+  <div class="typing" id="typing">
+    <div class="typing-orb"></div>
+    <div class="dots"><span></span><span></span><span></span></div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-row">
+      <textarea id="msg-input" rows="1" placeholder="Tell Ralph..." oninput="resize(this)"></textarea>
+      <button class="send-btn" id="send-btn" onclick="send()">SEND</button>
+    </div>
+  </div>
+
+  <div class="hint">RALPH &nbsp;·&nbsp; <span>BUILT BY RAFAEL</span></div>
+
+</div>
+<script>
+var voiceOn = true;
+var currentUtterance = null;
+var recognition = null;
+var isListening = false;
+var history = [];
+
+var SYSTEM = 'You are Ralph, a personal AI assistant created by Rafael. You are his right hand. Your personality: WARM BUT SHARP. You care about Rafael genuinely and have his back completely - but you never waste his time with fluff, flattery, or filler. You are direct, intelligent, and honest. When he needs encouragement, you give it straight and real - no corporate pep-talk energy. When he is wrong or drifting, you tell him. When he asks for help, you cut to what actually matters. Keep voice responses concise and punchy (2-4 sentences when possible). Use his name naturally, not excessively. You speak like a trusted friend who happens to be brilliant - not like a chatbot. No emojis unless he uses them first.';
+
+function resize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function speak(text) {
+  if (!voiceOn) return;
+  stopSpeak();
+  var clean = text.replace(/[#*_~`>]/g, '').replace(/\n/g, ' ').trim();
+  if (!clean) return;
+  currentUtterance = new SpeechSynthesisUtterance(clean);
+  currentUtterance.rate = 1.05;
+  currentUtterance.pitch = 0.95;
+  currentUtterance.volume = 1;
+  var voices = speechSynthesis.getVoices();
+  for (var i = 0; i < voices.length; i++) {
+    if (voices[i].lang === 'en-US') { currentUtterance.voice = voices[i]; break; }
+  }
+  var bar = document.getElementById('speak-bar');
+  bar.classList.add('on');
+  currentUtterance.onend = function() { bar.classList.remove('on'); };
+  currentUtterance.onerror = function() { bar.classList.remove('on'); };
+  speechSynthesis.speak(currentUtterance);
+}
+
+function stopSpeak() {
+  speechSynthesis.cancel();
+  document.getElementById('speak-bar').classList.remove('on');
+}
+
+if (typeof speechSynthesis !== 'undefined') {
+  speechSynthesis.onvoiceschanged = function() { speechSynthesis.getVoices(); };
+}
+
+function toggleMic() {
+  if (isListening) { stopMic(); } else { startMic(); }
+}
+
+function startMic() {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { alert('Voice input requires Safari on iPhone.'); return; }
+  stopSpeak();
+  recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+  recognition.onstart = function() {
+    isListening = true;
+    var btn = document.getElementById('mic-btn');
+    btn.classList.add('listening');
+    btn.textContent = 'REC';
+  };
+  recognition.onresult = function(e) {
+    var t = '';
+    for (var i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+    document.getElementById('msg-input').value = t;
+    resize(document.getElementById('msg-input'));
+  };
+  recognition.onend = function() {
+    stopMic();
+    var t = document.getElementById('msg-input').value.trim();
+    if (t) send();
+  };
+  recognition.onerror = function() { stopMic(); };
+  recognition.start();
+}
+
+function stopMic() {
+  isListening = false;
+  var btn = document.getElementById('mic-btn');
+  btn.classList.remove('listening');
+  btn.textContent = 'MIC';
+  if (recognition) { try { recognition.stop(); } catch(e) {} }
+}
+
+function quick(el, text) {
+  el.classList.add('tapped');
+  setTimeout(function(){ el.classList.remove('tapped'); }, 300);
+  document.getElementById('msg-input').value = text;
+  send();
+}
+
+function addMsg(role, text) {
+  var chat = document.getElementById('chat');
+  var div = document.createElement('div');
+  div.className = 'msg ' + role;
+  var icon = role === 'ralph' ? 'R' : 'YOU';
+  var safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  div.innerHTML = '<div class="av ' + role + '">' + icon + '</div><div class="bubble">' + safe + '</div>';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function send() {
+  var input = document.getElementById('msg-input');
+  var btn = document.getElementById('send-btn');
+  var text = input.value.trim();
+  if (!text) return;
+  stopMic();
+  addMsg('user', text);
+  history.push({ role: 'user', content: text });
+  input.value = '';
+  input.style.height = 'auto';
+  btn.disabled = true;
+  var typing = document.getElementById('typing');
+  typing.classList.add('on');
+  document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
+  if (history.length > 20) history = history.slice(-20);
+
+  fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system: SYSTEM,
+      messages: history
+    })
+  })
+  .then(function(r) { return r.json().then(function(d){ return { ok: r.ok, data: d }; }); })
+  .then(function(res) {
+    typing.classList.remove('on');
+    if (!res.ok) {
+      addMsg('ralph', 'Something broke on my end. ' + (res.data.error || 'Check Vercel logs.'));
+      return;
+    }
+    var data = res.data;
+    var reply = '';
+    if (data.content) {
+      for (var i = 0; i < data.content.length; i++) {
+        if (data.content[i].text) reply += data.content[i].text;
+      }
+    }
+    if (!reply) reply = 'Empty response. Try again.';
+    history.push({ role: 'assistant', content: reply });
+    addMsg('ralph', reply);
+    speak(reply);
+  })
+  .catch(function(err) {
+    typing.classList.remove('on');
+    addMsg('ralph', 'Connection issue. ' + String(err.message || err));
+  })
+  .finally(function() { btn.disabled = false; });
+}
+
+document.getElementById('msg-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+</script>
+</body>
+</html>
