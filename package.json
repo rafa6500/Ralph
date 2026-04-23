@@ -1,0 +1,9 @@
+{
+  "name": "ralph",
+  "version": "1.0.0",
+  "description": "RALPH - Personal AI assistant by Rafael",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}
